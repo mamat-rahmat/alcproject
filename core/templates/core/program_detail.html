@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %} Program Detail {% endblock title %}
+
+{% block content %}
+<section class="container">
+  <div class="columns">
+    <div class="column is-half is-offset-one-quarter">
+      <div class="box">
+        <h1 class="title is-size-5">{{object.name}}</h1>
+        <table class="table is-bordered">
+          <tr>
+            <td>Jadwal Pendaftaran</td>
+            <td>{{object.open_registration_time|date:"d F Y"}} s/d {{object.close_registration_time|date:"d F Y"}}</td>
+          </tr>
+          <tr>
+            <td>Harga</td>
+            <td>Rp. {{object.price|intcomma}}</td>
+          </tr>
+        </table>
+        <hr>
+        <nav class="panel is-link">
+          <a href="{% url 'topic-list' object.id %}" class="panel-block">
+            <span class="panel-icon">
+              <i class="fas fa-comments" aria-hidden="true"></i>
+            </span>
+            Forum
+          </a>
+          {% for exam in object.exam_set.all %}
+          <a href="{% url 'exam-detail' object.id exam.id %}" class="panel-block">
+            <span class="panel-icon">
+              <i class="fas fa-book" aria-hidden="true"></i>
+            </span>
+            {{exam.name}}
+          </a>
+          {% endfor %}
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Index {% endblock title %}
+
+{% block content %}
+<section>
+  <div class="columns is-vcentered">
+    <div class="column">
+      <h1 class="title is-1 has-text-centered">
+        Pelatihan Online<br />
+        ALC Indonesia
+      </h1>
+      <h2 class="subtitle has-text-centered">
+        Program persiapan jarak jauh berbasis web untuk KSN 2021
+      </h2>
+      <div class="buttons is-centered">
+        <a href="/accounts/login" class="button is-link is-medium">Login</a>
+        <a href="{% url 'program-list' %}" class="button is-primary is-medium">Program</a>
+      </div>
+    </div>
+    <div class="column">
+      <figure class="image">  
+        <img src="{% static 'core/img/online-learning.png' %}">
+      </figure>
+    </div>
+  </div>
+</section>
+{% endblock content %}
