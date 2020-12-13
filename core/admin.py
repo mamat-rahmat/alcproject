@@ -1,5 +1,16 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from .models import Program, SelectedProgram, UserProfile, Tutorship, Membership, Problemset, Exam, Answer, Topic, Post
+
+
+# Define a new User admin
+class UserAdmin(BaseUserAdmin):
+    search_fields = ['username']
+
+# Re-register UserAdmin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 class ExamInline(admin.TabularInline):
@@ -68,7 +79,7 @@ admin.site.register(Tutorship, TutorshipAdmin)
 class MembershipAdmin(admin.ModelAdmin):
     list_display = ('user', 'program', 'paid')
     #list_display = ('user', 'user__userprofile__nama_lengkap', 'user__userprofile_sekolah', 'program', 'paid')
-    #search_fields = ['user__userprofile__nama_lengkap', 'user__userprofile_sekolah']
+    search_fields = ['user__username', 'program__name']
 
 admin.site.register(Membership, MembershipAdmin)
 
@@ -115,6 +126,7 @@ class AnswerAdmin(admin.ModelAdmin):
                                      ]})
     ]
     actions = ['grade_answers']
+    search_fields = ['user__username']
 
     class Media:
         css = {
