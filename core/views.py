@@ -66,6 +66,7 @@ def exam_detail(request, pk_program, pk_exam):
     saved = False
     myanswer, created = Answer.objects.get_or_create(user=request.user,
                                                      exam=exam)
+    myanskey = exam.problemset
     if request.method == "POST":
         for i in range(1, 31):
             num = f"no{i:02}"
@@ -93,10 +94,13 @@ def exam_detail(request, pk_program, pk_exam):
         ranking.append(item)
     ranking.sort(key=lambda x: x[-1], reverse=True)
 
+    ranking = [[idx+1]+val for idx,val in enumerate(ranking)]
+
     context = {
         'program': program,
         'exam': exam,
         'answer': model_to_dict(myanswer),
+        'anskey': model_to_dict(myanskey),
         'sidebar': True,
         'ranking': ranking,
         'saved': saved

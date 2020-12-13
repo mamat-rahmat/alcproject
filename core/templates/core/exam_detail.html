@@ -88,20 +88,25 @@
             {% endif %}
           </div>
           <div class="tab-content-item {% if not saved %}is-hidden{% endif %} has-text-centered" data-content="3">
-            {% if exam.is_ended %}
-              Pengumpulan jawaban ditutup
-            {% elif exam.is_started %}
+            
+            {% if exam.is_started %}
               {% if saved %}
-              <div class="notification is-success">
-                Jawaban berhasil diperbaharui
-              </div>
+                <div class="notification is-success">
+                  Jawaban berhasil diperbaharui
+                </div>
               {% endif %}
+              {% if exam.is_ended %}
+                <div class="notification is-danger">
+                  Pengumpulan jawaban ditutup
+                </div>
+              {% else %}
               <p id="timer" style="margin-bottom: 3rem;">
                 <span id="days"></span>
                 <span id="hours"></span>
                 <span id="minutes"></span>
                 <span id="seconds"></span>
               </p>
+              {% endif %}
               <form method="post" action="">
                 {% csrf_token %}
                 <table class="table">
@@ -114,13 +119,21 @@
                         
                         {% if k <= exam.problemset.mcq_total %}
                         <td>
-                          <div class="field is-horizontal">
+                          <div class="field is-horizontal" 
+                            {% if exam.is_ended %}
+                              {% if answer|get:k == anskey|get:k %}
+                                style="border: 3px solid green"
+                              {% else %}
+                                style="border: 3px solid red"
+                              {% endif %}
+                            {% endif %}
+                          >
                             <div class="field-label is-small">
                               <label class="label">No{{k|stringformat:'02d'}} {{answer|get:k}}</label>
                             </div>
                             <div class="control ">
                               <span class="select is-small">
-                                <select name="no{{k|stringformat:'02d'}}" class=" control" id="id_no{{k|stringformat:'02d'}}">
+                                <select name="no{{k|stringformat:'02d'}}" class=" control" id="id_no{{k|stringformat:'02d'}}" {% if exam.is_ended %}disabled{% endif %}>
                                   <option value="-" {% if answer|get:k == '-' %}selected{% endif %}>-</option>
                                   <option value="A" {% if answer|get:k == 'A' %}selected{% endif %}>A</option>
                                   <option value="B" {% if answer|get:k == 'B' %}selected{% endif %}>B</option>
@@ -141,9 +154,11 @@
                   {% endfor %}
                 </table>
 
+                {% if not exam.is_ended %}
                 <div class="field">
                   <button type="submit" class="button is-primary">Save</button>
-                </div>
+                </div>  
+                {% endif %}
               </form>
             {% else %}
               Pengumpulan jawaban belum tersedia
@@ -153,15 +168,17 @@
             {% if exam.is_ended %}
             <table class="table is-bordered center">
               <thead>
-                <th>Nama</td>
-                <th>Sekolah</td>
-                <th>Nilai</td>
+                <th>Rank</th>
+                <th>Nama</th>
+                <th>Sekolah</th>
+                <th>Nilai</th>
               </thead>
               <tbody>
                 {% for member in ranking %}
                 <tr>
                   <td>{{member.0}}</td>
                   <td>{{member.1}}</td>
+                  <td>{{member.2}}</td>
                   <td>{{member.2}}</td>
                 </tr>
                 {% endfor %}
