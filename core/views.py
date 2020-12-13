@@ -145,6 +145,13 @@ def edit_profile(request):
 @login_required
 def topic_list(request, pk_program):
     program = get_object_or_404(Program, pk=pk_program)
+    membership_set = request.user.membership_set.filter(user=request.user,
+                                                        program=program,
+                                                        paid=True)
+
+    if not membership_set:
+        return HttpResponse('Unauthorized Access', status=401)
+
     object_list = Topic.objects.filter(program=program)
     context = {
         'program': program,
