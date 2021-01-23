@@ -18,6 +18,8 @@ BIDANG_CHOICES = (
     ('matematika-smp', 'Matematika SMP'),
     ('ipa-smp', 'IPA SMP'),
     ('ips-smp', 'IPS SMP'),
+    ('matematika-sd', 'Matematika SD'),
+    ('ipa-sd', 'IPA SD'),
 )
 
 ROLE_CHOICES = (
@@ -169,6 +171,11 @@ class Exam(models.Model):
     problemset = models.ForeignKey(Problemset, on_delete=models.CASCADE)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
+    correct_score = models.IntegerField(default=1)
+    wrong_score = models.IntegerField(default=0)
+    blank_score = models.IntegerField(default=0)
+    score_in_percentage = models.BooleanField(default=True)
+
 
     def __str__(self):
         return f'{self.name} - {self.program}'
@@ -245,23 +252,34 @@ class Answer(models.Model):
         return f"{self.user} - {self.exam} - {self.score} - {choices}"
 
     def grade(self):
+        problemset = self.exam.problemset
+        exam = self.exam
         answer = model_to_dict(self)
-        anskey = model_to_dict(self.exam.problemset)
-        total = 0
-        for i in range(1,51):
+        anskey = model_to_dict(problemset)
+        total = problemset.mcq_total()
+
+        correct_point = 0
+        wrong_point = 0
+        blank_point = 0
+        for i in range(1,total+1):
             num = f"no{i:02}"
-            if (anskey[num] != '-'):
-                total += 1
-        point = 0
-        for i in range(1,51):
-            num = f"no{i:02}"
-            if (anskey[num] != '-' and anskey[num] == answer[num]):
-                point += 1
-        #print(total, point)
+            if(answer[num] == '-'):
+                blank_point += 1
+            else:
+                if (answer[num] == anskey[num]):
+                    correct_point += 1
+                else:
+                    wrong_point += 1
+
         if total==0:
             self.score = 0
         else:
-            self.score = int(100*point/total)
+            if exam.score_in_percentage:
+                self.score = int(100*correct_point/total)
+            else:
+                self.score = correct_point*exam.correct_score + \
+                             wrong_point*exam.wrong_score + \
+                             blank_point*exam.blank_score
         self.graded = True
         self.save()
 
