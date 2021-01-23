@@ -171,7 +171,7 @@ class Exam(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.program}'
 
     def is_started(self):
         return timezone.now() >= self.start_time
@@ -257,11 +257,12 @@ class Answer(models.Model):
             num = f"no{i:02}"
             if (anskey[num] != '-' and anskey[num] == answer[num]):
                 point += 1
-        print(total, point)
+        #print(total, point)
         if total==0:
             self.score = 0
         else:
             self.score = int(100*point/total)
+        self.graded = True
         self.save()
 
 

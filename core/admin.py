@@ -85,7 +85,7 @@ admin.site.register(Membership, MembershipAdmin)
 
 
 class ProblemsetAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','mcq_total')
     fieldsets = [
         (None, {'fields': ['name']}),
         ('Problem & Solution', {'fields': ['problem_file', 'solution_file']}),
@@ -126,7 +126,7 @@ class AnswerAdmin(admin.ModelAdmin):
                                      ]})
     ]
     actions = ['grade_answers']
-    search_fields = ['user__username']
+    search_fields = ['user__username', 'exam__name', 'exam__program__name']
 
     class Media:
         css = {
