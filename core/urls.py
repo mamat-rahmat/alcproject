@@ -13,7 +13,7 @@ from .views import (
     edit_profile,
     topic_list,
     topic_detail,
-    topic_create
+    topic_create,
 )
 
 
@@ -28,6 +28,6 @@ urlpatterns = [
     path('program/<int:pk>', ProgramDetailView.as_view(), name='program-detail'),
     path('program/<int:pk_program>/exam/<int:pk_exam>', exam_detail, name='exam-detail'),
     path('program/<int:pk_program>/topic', topic_list, name='topic-list'),
-    path('program/<int:pk_program>/topic/<int:pk_topic>', topic_detail, name='topic-detail'),   
-    path('program/<int:pk_program>/topic/create', topic_create, name='topic-create'),   
+    path('program/<int:pk_program>/topic/<int:pk_topic>', topic_detail, name='topic-detail'),
+    path('program/<int:pk_program>/topic/create', topic_create, name='topic-create'),
 ]

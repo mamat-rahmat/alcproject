@@ -1,3 +1,5 @@
+import xlwt
+from django.http import HttpResponse
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
@@ -21,7 +23,7 @@ class ProgramAdmin(admin.ModelAdmin):
     inlines = [ExamInline]
     list_display = ('name', 'bidang', 'exam_count')
     search_fields = ['name']
-    actions = ['clone_program']
+    actions = ['clone_program', 'export_ranking']
 
     def clone_program(self, request, queryset):
         for obj in queryset:
@@ -37,6 +39,58 @@ class ProgramAdmin(admin.ModelAdmin):
                 exam.program = obj
                 exam.save()
         self.message_user(request, "%s programs succesfully cloned" % queryset.count())
+
+    def export_ranking(self, request, queryset):
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="ranking.xls"'
+
+        wb = xlwt.Workbook(encoding='utf-8')
+
+        for program in queryset:
+            ws = wb.add_sheet(program.name)
+            row_num = 0
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+
+            exams = program.exam_set.all()
+            members_siswa = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
+            members_guru = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='GURU')
+            header = ['Role', 'Nama', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total']
+            body = []
+            for member in members_siswa:
+                user = member.user
+                userprofile = user.userprofile
+                row = ['SISWA', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                total = 0;
+                for exam in exams:
+                    answer, created = Answer.objects.get_or_create(user=user, exam=exam)
+                    row.append(answer.score)
+                    total += answer.score
+                row.append(total)
+                body.append(row)
+            for member in members_guru:
+                userprofile = member.user.userprofile
+                row = ['GURU', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                total = 0;
+                for exam in exams:
+                    answer, created = Answer.objects.get_or_create(user=user, exam=exam)
+                    row.append(answer.score)
+                    total += answer.score
+                row.append(total)
+                body.append(row)
+            body.sort(key=lambda x: (x[0],x[-1]), reverse=True)
+            print(header)
+            print(body)
+
+            for col_num in range(len(header)):
+                ws.write(row_num, col_num, header[col_num], font_style)
+            for row in body:
+                row_num += 1
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, row[col_num], font_style)
+
+        wb.save(response)
+        return response
 
 admin.site.register(Program, ProgramAdmin)
 
