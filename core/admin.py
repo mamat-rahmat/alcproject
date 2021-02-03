@@ -47,7 +47,9 @@ class ProgramAdmin(admin.ModelAdmin):
         wb = xlwt.Workbook(encoding='utf-8')
 
         for program in queryset:
-            ws = wb.add_sheet(program.name)
+            sheet_name = program.name
+            sheet_name.replace('|', '')
+            ws = wb.add_sheet(sheet_name)
             row_num = 0
             font_style = xlwt.XFStyle()
             font_style.font.bold = True
