@@ -12,7 +12,7 @@ from registration.backends.simple.views import RegistrationView
 def index(request):
     context = {
         'siswa_count' : UserProfile.objects.filter(role="SISWA").count(),
-        'guru_count' : UserProfile.objects.filter(role="SISWA").count(),
+        'guru_count' : UserProfile.objects.filter(role="GURU").count(),
         'sekolah_count' : UserProfile.objects.values('sekolah').distinct().count(),
         'program_count' : Program.objects.all().count(),
     }
