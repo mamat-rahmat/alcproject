@@ -19,6 +19,34 @@
         <a href="/accounts/login" class="button is-link is-medium">Login</a>
         <a href="{% url 'program-list' %}" class="button is-primary is-medium">Program</a>
       </div>
+      <section class="info-tiles">
+          <div class="tile is-ancestor has-text-centered">
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{siswa_count}}</p>
+                      <p class="subtitle">Siswa</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{guru_count}}</p>
+                      <p class="subtitle">Guru</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{sekolah_count}}</p>
+                      <p class="subtitle">Sekolah</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{program_count}}</p>
+                      <p class="subtitle">Program</p>
+                  </article>
+              </div>
+          </div>
+      </section>
     </div>
     <div class="column">
       <figure class="image">  

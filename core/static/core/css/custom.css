@@ -28,3 +28,11 @@ table.center {
     margin-right:auto;
     justify-content: center
 }
+
+.info-tiles {
+  margin: 2rem 2rem;
+}
+.info-tiles .subtitle {
+  font-weight: 300;
+  color: #8F99A3;
+}
