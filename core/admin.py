@@ -1,4 +1,5 @@
-import xlwt
+from openpyxl import Workbook
+from openpyxl.styles import Font
 from django.http import HttpResponse
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -41,20 +42,13 @@ class ProgramAdmin(admin.ModelAdmin):
         self.message_user(request, "%s programs succesfully cloned" % queryset.count())
 
     def export_ranking(self, request, queryset):
-        response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="ranking.xls"'
-
-        wb = xlwt.Workbook(encoding='utf-8')
+        wb = Workbook()
 
         for program in queryset:
-            ws = wb.add_sheet(program.name.replace('|', ''))
-            row_num = 0
-            font_style = xlwt.XFStyle()
-            font_style.font.bold = True
-
             exams = program.exam_set.all()
             members_siswa = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
             members_guru = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='GURU')
+            
             header = ['Role', 'Nama', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total']
             body = []
             for member in members_siswa:
@@ -79,16 +73,20 @@ class ProgramAdmin(admin.ModelAdmin):
                 row.append(total)
                 body.append(row)
             body.sort(key=lambda x: (x[0],x[-1]), reverse=True)
-            print(header)
-            print(body)
-
-            for col_num in range(len(header)):
-                ws.write(row_num, col_num, header[col_num], font_style)
+            
+            ws = wb.create_sheet()
+            ws.append([program.name])
+            ws.append(header)
             for row in body:
-                row_num += 1
-                for col_num in range(len(row)):
-                    ws.write(row_num, col_num, row[col_num], font_style)
+                ws.append(row)
+            c = ws['A1']
+            c.font = Font(bold=True)
 
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=ranking.xlsx'
+
+        sheet = wb.get_sheet_by_name('Sheet')
+        wb.remove_sheet(sheet)
         wb.save(response)
         return response
 
