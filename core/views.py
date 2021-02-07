@@ -19,41 +19,95 @@ def index(request):
     return render(request, 'core/index.html', context)
 
 
-class ProgramListView(ListView):
-    context_object_name = 'object_list'
-    template_name = 'core/program_list.html'
+# class ProgramListView(ListView):
+#     context_object_name = 'object_list'
+#     template_name = 'core/program_list.html'
 
-    def get_queryset(self):
-        return Program.objects.filter(special_program=False).order_by('-id')
-
-
-class MyProgramListView(ListView):
-    context_object_name = 'object_list'
-    template_name = 'core/my_program_list.html'
-
-    def get_queryset(self):
-        memberships = Membership.objects.filter(user=self.request.user)
-        return Program.objects.filter(membership__in=memberships).order_by('-id')
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(MyProgramListView, self).dispatch(request, *args, **kwargs)
+#     def get_queryset(self):
+#         return Program.objects.filter(special_program=False).order_by('-id')
 
 
-class SpecialProgramListView(ListView):
-    context_object_name = 'object_list'
-    template_name = 'core/special_program_list.html'
+def program_list(request):
+    programs = Program.objects.filter(special_program=False).order_by('-id')
+    for program in programs:
+        memberships = Membership.objects.filter(user=request.user,
+                                                program=program,
+                                                paid=True)
+        program.is_registered = bool(memberships)
+    context = {'programs': programs}
+    return render(request, 'core/program_list.html', context)
 
-    def get_queryset(self):
-        return Program.objects.filter(special_program=True).order_by('-id')
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(SpecialProgramListView, self).dispatch(request, *args, **kwargs)
+# class MyProgramListView(ListView):
+#     context_object_name = 'object_list'
+#     template_name = 'core/my_program_list.html'
+
+#     def get_queryset(self):
+#         memberships = Membership.objects.filter(user=self.request.user)
+#         return Program.objects.filter(membership__in=memberships).order_by('-id')
+
+#     @method_decorator(login_required)
+#     def dispatch(self, request, *args, **kwargs):
+#         return super(MyProgramListView, self).dispatch(request, *args, **kwargs)
+
+@login_required
+def my_program_list(request):
+    memberships = Membership.objects.filter(user=request.user, paid=True)
+    programs = Program.objects.filter(membership__in=memberships).order_by('-id')
+    for program in programs:
+        program.is_registered = True
+    context = {'programs': programs}
+    return render(request, 'core/my_program_list.html', context)
 
 
-class ProgramDetailView(DetailView):
-    model = Program
+# class SpecialProgramListView(ListView):
+#     context_object_name = 'object_list'
+#     template_name = 'core/special_program_list.html'
+
+#     def get_queryset(self):
+#         return Program.objects.filter(special_program=True).order_by('-id')
+
+#     @method_decorator(login_required)
+#     def dispatch(self, request, *args, **kwargs):
+#         return super(SpecialProgramListView, self).dispatch(request, *args, **kwargs)
+
+
+def special_program_list(request):
+    programs = Program.objects.filter(special_program=True).order_by('-id')
+    for program in programs:
+        memberships = Membership.objects.filter(user=request.user,
+                                                program=program,
+                                                paid=True)
+        program.is_registered = bool(memberships)
+    context = {'programs': programs}
+    return render(request, 'core/special_program_list.html', context)
+
+
+# class ProgramDetailView(DetailView):
+#     model = Program
+
+def program_detail(request, pk):
+    program = Program.objects.get(pk=pk)
+    memberships = Membership.objects.filter(user=request.user,
+                                            program=program)
+    if not memberships:
+        program.status = 'unregistered'
+    elif memberships[0].paid:
+        program.status = 'registered'
+    else:
+        program.status = 'pending'
+
+    context = {'program': program}
+    return render(request, 'core/program_detail.html', context)
+
+
+@login_required
+def program_register(request, pk):
+    program = Program.objects.get(pk=pk)
+    membership, created = Membership.objects.get_or_create(user=request.user,
+                                                           program=program,
+                                                           paid=False)
+    return redirect('program-detail', pk=pk)
 
 
 @login_required

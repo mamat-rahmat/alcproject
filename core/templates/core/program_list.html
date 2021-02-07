@@ -28,7 +28,7 @@
     </ul>
   </div>
   <div class="columns is-multiline">
-    {% for program in object_list %}
+    {% for program in programs %}
     <div class="column is-half is-offset-one-quarter">
       <div class="card">
         <div class="card-content">
@@ -44,6 +44,12 @@
               </a>
               <span class="subtitle is-size-6">{{program.get_bidang_display}}</span>
               <span class="subtitle is-size-6 is-pulled-right">Rp. {{program.price|intcomma}}</span>
+              </br>
+              {% if  program.is_registered %}
+              <span class="tag is-success">Sudah Terdaftar</span>
+              {% else %}
+              <span class="tag is-danger">Belum Terdaftar</span>
+              {% endif %}
             </div>
           </div>
         </div>

@@ -132,6 +132,13 @@ class MembershipAdmin(admin.ModelAdmin):
     list_display = ('user', 'program', 'paid')
     #list_display = ('user', 'user__userprofile__nama_lengkap', 'user__userprofile_sekolah', 'program', 'paid')
     search_fields = ['user__username', 'program__name']
+    actions = ['accept_membership']
+
+    def accept_membership(self, request, queryset):
+        for obj in queryset:
+            obj.paid = True
+            obj.save()
+        self.message_user(request, "%s membership succesfully accepted" % queryset.count())
 
 admin.site.register(Membership, MembershipAdmin)
 

@@ -63,6 +63,7 @@ class Program(models.Model):
     def exam_count(self):
         return self.exam_set.count()
 
+
 class SelectedProgram(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
 
