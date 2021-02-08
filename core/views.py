@@ -30,9 +30,12 @@ def index(request):
 def program_list(request):
     programs = Program.objects.filter(special_program=False).order_by('-id')
     for program in programs:
-        memberships = Membership.objects.filter(user=request.user,
-                                                program=program,
-                                                paid=True)
+        if request.user.is_anonymous:
+            memberships = []
+        else:
+            memberships = Membership.objects.filter(user=request.user,
+                                                    program=program,
+                                                    paid=True)
         program.is_registered = bool(memberships)
     context = {'programs': programs}
     return render(request, 'core/program_list.html', context)
@@ -75,9 +78,12 @@ def my_program_list(request):
 def special_program_list(request):
     programs = Program.objects.filter(special_program=True).order_by('-id')
     for program in programs:
-        memberships = Membership.objects.filter(user=request.user,
-                                                program=program,
-                                                paid=True)
+        if request.user.is_anonymous:
+            memberships = []
+        else:
+            memberships = Membership.objects.filter(user=request.user,
+                                                    program=program,
+                                                    paid=True)
         program.is_registered = bool(memberships)
     context = {'programs': programs}
     return render(request, 'core/special_program_list.html', context)
