@@ -133,7 +133,7 @@ class MembershipAdmin(admin.ModelAdmin):
     #list_display = ('user', 'user__userprofile__nama_lengkap', 'user__userprofile_sekolah', 'program', 'paid')
     search_fields = ['user__username', 'program__name']
     actions = ['accept_membership']
-    list_filter = ['paid']
+    list_filter = ['paid', 'program__bidang']
 
     def accept_membership(self, request, queryset):
         for obj in queryset:
