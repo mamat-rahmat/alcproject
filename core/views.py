@@ -134,7 +134,7 @@ def exam_detail(request, pk_program, pk_exam):
                                                      exam=exam)
     myanskey = exam.problemset
     if request.method == "POST":
-        for i in range(1, 31):
+        for i in range(1, 51):
             num = f"no{i:02}"
             setattr(myanswer, num, request.POST.get(f"no{i:02}", '-'))
         myanswer.save()
