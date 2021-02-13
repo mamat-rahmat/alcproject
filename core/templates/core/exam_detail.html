@@ -166,24 +166,28 @@
           </div>
           <div class="tab-content-item is-hidden has-text-centered" data-content="4">
             {% if exam.is_ended %}
-            <table class="table is-bordered center">
-              <thead>
-                <th>Rank</th>
-                <th>Nama</th>
-                <th>Sekolah</th>
-                <th>Nilai</th>
-              </thead>
-              <tbody>
-                {% for member in ranking %}
-                <tr>
-                  <td>{{member.0}}</td>
-                  <td>{{member.1}}</td>
-                  <td>{{member.2}}</td>
-                  <td>{{member.3}}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+              {% if exam.show_ranking %}
+              <table class="table is-bordered center">
+                <thead>
+                  <th>Rank</th>
+                  <th>Nama</th>
+                  <th>Sekolah</th>
+                  <th>Nilai</th>
+                </thead>
+                <tbody>
+                  {% for member in ranking %}
+                  <tr>
+                    <td>{{member.0}}</td>
+                    <td>{{member.1}}</td>
+                    <td>{{member.2}}</td>
+                    <td>{{member.3}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {%else%}
+              Hubungi admin/panitia untuk pengumuman hasil
+              {% endif %}
             {% else %}
             Hasil belum tersedia
             {% endif %}
