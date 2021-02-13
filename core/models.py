@@ -176,7 +176,6 @@ class Exam(models.Model):
     wrong_score = models.IntegerField(default=0)
     blank_score = models.IntegerField(default=0)
     score_in_percentage = models.BooleanField(default=True)
-    show_ranking = models.BooleanField(default=True)
 
 
     def __str__(self):

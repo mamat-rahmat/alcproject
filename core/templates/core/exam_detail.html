@@ -166,7 +166,7 @@
           </div>
           <div class="tab-content-item is-hidden has-text-centered" data-content="4">
             {% if exam.is_ended %}
-              {% if exam.show_ranking %}
+              {% if exam.score_in_percentage %}
               <table class="table is-bordered center">
                 <thead>
                   <th>Rank</th>
@@ -185,8 +185,8 @@
                   {% endfor %}
                 </tbody>
               </table>
-              {%else%}
-              Hubungi admin/panitia untuk pengumuman hasil
+              {% else %}
+              Hubungi admin/panitia untuk pengumuman hasil. 
               {% endif %}
             {% else %}
             Hasil belum tersedia
