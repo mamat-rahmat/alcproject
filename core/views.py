@@ -141,26 +141,25 @@ def exam_detail(request, pk_program, pk_exam):
         myanswer.grade()
         saved = True
 
-    answers = Answer.objects.select_related('user__userprofile').filter(exam=exam, user__userprofile__role='SISWA')
-    members = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
-    scores = dict()
-    for member in members:
-        scores[member.user] = 0
-    for answer in answers:
-        scores[answer.user] = answer.score
-
     ranking = []
-    for user, score in scores.items():
-        userprofile = user.userprofile
-        item = [
-            userprofile.nama_lengkap,
-            userprofile.sekolah,
-            score
-        ]
-        ranking.append(item)
-    ranking.sort(key=lambda x: x[-1], reverse=True)
-
-    ranking = [[idx+1]+val for idx,val in enumerate(ranking)]
+    if exam.is_ended and exam.score_in_percentage:
+        answers = Answer.objects.select_related('user__userprofile').filter(exam=exam, user__userprofile__role='SISWA')
+        members = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
+        scores = dict()
+        for member in members:
+            scores[member.user] = 0
+        for answer in answers:
+            scores[answer.user] = answer.score
+        for user, score in scores.items():
+            userprofile = user.userprofile
+            item = [
+                userprofile.nama_lengkap,
+                userprofile.sekolah,
+                score
+            ]
+            ranking.append(item)
+        ranking.sort(key=lambda x: x[-1], reverse=True)
+        ranking = [[idx+1]+val for idx,val in enumerate(ranking)]
 
     context = {
         'program': program,
