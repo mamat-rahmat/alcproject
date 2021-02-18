@@ -49,12 +49,12 @@ class ProgramAdmin(admin.ModelAdmin):
             members_siswa = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
             members_guru = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='GURU')
             
-            header = ['Role', 'Nama', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total']
+            header = ['Role', 'Nama', 'No WA', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total']
             body = []
             for member in members_siswa:
                 user = member.user
                 userprofile = user.userprofile
-                row = ['SISWA', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                row = ['SISWA', userprofile.nama_lengkap, userprofile.nomor_whatsapp, userprofile.sekolah, userprofile.get_bidang_display()]
                 total = 0;
                 for exam in exams:
                     answer, created = Answer.objects.get_or_create(user=user, exam=exam)
@@ -64,7 +64,7 @@ class ProgramAdmin(admin.ModelAdmin):
                 body.append(row)
             for member in members_guru:
                 userprofile = member.user.userprofile
-                row = ['GURU', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                row = ['GURU', userprofile.nama_lengkap, userprofile.nomor_whatsapp, userprofile.sekolah, userprofile.get_bidang_display()]
                 total = 0;
                 for exam in exams:
                     answer, created = Answer.objects.get_or_create(user=user, exam=exam)
