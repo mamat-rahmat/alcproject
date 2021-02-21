@@ -50,6 +50,7 @@ class Program(models.Model):
     close_registration_time = models.DateTimeField(blank=True, null=True)
     price = models.IntegerField()
     special_program = models.BooleanField(default=False)
+    download_file = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
